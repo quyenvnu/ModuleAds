@@ -1336,7 +1336,9 @@ public class AppOpenManager implements Application.ActivityLifecycleCallbacks, L
             return;
         }
 
-        Log.d(TAG, "onStart: show resume ads :" + currentActivity.getClass().getName());
+        if (currentActivity != null) {
+            Log.d(TAG, "onStart: show resume ads :" + currentActivity.getClass().getName());
+        }
         showAdIfAvailable(false);
     }
 
