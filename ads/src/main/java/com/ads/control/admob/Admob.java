@@ -71,7 +71,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class Admob {
-    private static final String TAG = "ITGStudio";
+    private static final String TAG = "WindyStudio";
     private static Admob instance;
     private int currentClicked = 0;
     private String nativeId;

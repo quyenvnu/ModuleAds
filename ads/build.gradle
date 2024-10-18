@@ -76,8 +76,8 @@ afterEvaluate {
             // Creates a Maven publication called "release".
             release(MavenPublication) {
                 from components.release
-                groupId = 'com.github.trongluan99'
-                artifactId = 'JMM-Studio'
+                groupId = 'com.github.quyenvnu'
+                artifactId = 'Windy-Studio'
                 version = '2.1.4'
             }
         }
