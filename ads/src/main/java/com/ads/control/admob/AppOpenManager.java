@@ -1461,13 +1461,13 @@ public class AppOpenManager implements Application.ActivityLifecycleCallbacks, L
         }
 
         for (Class activity : disabledAppOpenList) {
-            if (activity.getName().equals(currentActivity.getClass().getName())) {
+            if (currentActivity != null && activity.getName().equals(currentActivity.getClass().getName())) {
                 Log.d(TAG, "onStart: activity is disabled");
                 return;
             }
         }
 
-        if (splashActivity != null && splashActivity.getName().equals(currentActivity.getClass().getName())) {
+        if (splashActivity != null && currentActivity != null && splashActivity.getName().equals(currentActivity.getClass().getName())) {
             String adId = splashAdId;
             if (adId == null) {
                 Log.e(TAG, "splash ad id must not be null");
@@ -1477,7 +1477,11 @@ public class AppOpenManager implements Application.ActivityLifecycleCallbacks, L
             return;
         }
 
-        Log.d(TAG, "onStart: show resume ads :" + currentActivity.getClass().getName());
+        if (currentActivity != null) {
+            Log.d(TAG, "onStart: show resume ads :" + currentActivity.getClass().getName());
+        } else {
+            Log.d(TAG, "onStart: currentActivity is NULL");
+        }
         showAdIfAvailable(false);
     }
 
