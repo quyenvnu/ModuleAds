@@ -20,7 +20,7 @@ import java.util.Currency;
 
 public class ITGLogEventManager {
 
-    private static final String TAG = "ITGLogEventManager";
+    private static final String TAG = "WindyLogEventManager";
 
     public static void logPaidAdImpression(Context context, AdValue adValue, String adUnitId, String mediationAdapterClassName, AdType adType) {
         logEventWithAds(context, (float) adValue.getValueMicros(), adValue.getPrecisionType(), adUnitId, mediationAdapterClassName, ITGAdConfig.PROVIDER_ADMOB);

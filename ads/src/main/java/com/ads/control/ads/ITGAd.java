@@ -469,4 +469,86 @@ public class ITGAd {
         Admob.getInstance().showRewardAds(context, rewardedAd, adCallback);
     }
 
+    // loadNativeAdResultCallback with Context
+    public void loadNativeAdResultCallbackContext(final Context activity, String id,
+                                           int layoutCustomNative, AdCallback callback) {
+        Admob.getInstance().loadNativeAd(((Context) activity), id, new AdCallback() {
+            @Override
+            public void onUnifiedNativeAdLoaded(@NonNull NativeAd unifiedNativeAd) {
+                super.onUnifiedNativeAdLoaded(unifiedNativeAd);
+                callback.onNativeAdLoaded(new ApNativeAd(layoutCustomNative, unifiedNativeAd));
+            }
+
+            @Override
+            public void onAdFailedToLoad(@Nullable LoadAdError i) {
+                super.onAdFailedToLoad(i);
+                callback.onAdFailedToLoad(i);
+            }
+
+            @Override
+            public void onAdFailedToShow(@Nullable AdError adError) {
+                super.onAdFailedToShow(adError);
+                callback.onAdFailedToShow(adError);
+            }
+
+            @Override
+            public void onAdClicked() {
+                super.onAdClicked();
+                callback.onAdClicked();
+            }
+        });
+    }
+
+    // loadNativeAd with Context
+    public void loadNativeAdContext(final Context activity, String id,
+                             int layoutCustomNative, FrameLayout adPlaceHolder, ShimmerFrameLayout
+                                     containerShimmerLoading, AdCallback callback) {
+        Admob.getInstance().loadNativeAd(((Context) activity), id, new AdCallback() {
+            @Override
+            public void onUnifiedNativeAdLoaded(@NonNull NativeAd unifiedNativeAd) {
+                super.onUnifiedNativeAdLoaded(unifiedNativeAd);
+                callback.onNativeAdLoaded(new ApNativeAd(layoutCustomNative, unifiedNativeAd));
+                populateNativeAdViewContext(activity, new ApNativeAd(layoutCustomNative, unifiedNativeAd), adPlaceHolder, containerShimmerLoading);
+            }
+
+            @Override
+            public void onAdImpression() {
+                super.onAdImpression();
+                callback.onAdImpression();
+            }
+
+            @Override
+            public void onAdFailedToLoad(@Nullable LoadAdError i) {
+                super.onAdFailedToLoad(i);
+                callback.onAdFailedToLoad(i);
+            }
+
+            @Override
+            public void onAdFailedToShow(@Nullable AdError adError) {
+                super.onAdFailedToShow(adError);
+                callback.onAdFailedToShow(adError);
+            }
+
+            @Override
+            public void onAdClicked() {
+                super.onAdClicked();
+                callback.onAdClicked();
+            }
+        });
+    }
+
+    // populateNativeAdView With Context 
+     public void populateNativeAdViewContext(Context activity, ApNativeAd apNativeAd, FrameLayout adPlaceHolder, ShimmerFrameLayout containerShimmerLoading) {
+        if (apNativeAd.getAdmobNativeAd() == null && apNativeAd.getNativeView() == null) {
+            containerShimmerLoading.setVisibility(View.GONE);
+            return;
+        }
+        @SuppressLint("InflateParams") NativeAdView adView = (NativeAdView) LayoutInflater.from(activity).inflate(apNativeAd.getLayoutCustomNative(), null);
+        containerShimmerLoading.stopShimmer();
+        containerShimmerLoading.setVisibility(View.GONE);
+        adPlaceHolder.setVisibility(View.VISIBLE);
+        Admob.getInstance().populateUnifiedNativeAdView(apNativeAd.getAdmobNativeAd(), adView);
+        adPlaceHolder.removeAllViews();
+        adPlaceHolder.addView(adView);
+    }
 }
