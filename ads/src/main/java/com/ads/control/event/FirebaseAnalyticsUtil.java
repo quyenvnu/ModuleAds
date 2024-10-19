@@ -33,4 +33,9 @@ public class FirebaseAnalyticsUtil {
         FirebaseAnalytics.getInstance(context).logEvent("paid_ad_impression_value_001", bundle);
     }
 
+    public static void logCrashOpenSplash(Context context) {
+        Bundle bundle = new Bundle();
+        bundle.putString("open_splash_crash", "open_splash_crash");
+        FirebaseAnalytics.getInstance(context).logEvent("crash_current_activity_null", bundle);
+    }
 }

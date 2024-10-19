@@ -30,6 +30,7 @@ import com.ads.control.config.ITGAdConfig;
 import com.ads.control.dialog.PrepareLoadingAdsDialog;
 import com.ads.control.dialog.ResumeLoadingDialog;
 import com.ads.control.event.ITGLogEventManager;
+import com.ads.control.event.FirebaseAnalyticsUtil;
 import com.ads.control.funtion.AdCallback;
 import com.ads.control.funtion.AdType;
 import com.google.android.gms.ads.AdActivity;
@@ -1481,6 +1482,7 @@ public class AppOpenManager implements Application.ActivityLifecycleCallbacks, L
             Log.d(TAG, "onStart: show resume ads :" + currentActivity.getClass().getName());
         } else {
             Log.d(TAG, "onStart: currentActivity is NULL");
+            FirebaseAnalyticsUtil.logCrashOpenSplash(myApplication.getApplicationContext());
         }
         showAdIfAvailable(false);
     }
