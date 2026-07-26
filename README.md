@@ -1,4 +1,4 @@
-# ITG Studio
+# MD Studio
 - Admob
 - Mediation Admob (Facebook, Applovin, Vungle, Pangle, Mintegral)
 - Adjust
@@ -12,7 +12,7 @@
         maven {
             url 'https://dl-maven-android.mintegral.com/repository/mbridge_android_sdk_oversea'
         }
-    implementation 'com.github.trongluan99:ITG-Studio:$version'
+    implementation 'com.github.xxxx:xxx-Studio:$version'
     implementation 'com.google.android.play:core:1.10.3'
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
     implementation 'com.google.android.gms:play-services-ads:21.4.0'
@@ -82,11 +82,11 @@ public class App extends AdsMultiDexApplication {
         AdjustConfig adjustConfig = new AdjustConfig(true,getString(R.string.adjust_token));
         mAdConfig.setAdjustConfig(adjustConfig);
         mAdConfig.setFacebookClientToken(getString(R.string.facebook_client_token));
-        mITGAdConfig.setAdjustTokenTiktok(getString(R.string.tiktok_token));
+        mWDAdConfig.setAdjustTokenTiktok(getString(R.string.tiktok_token));
 
-        mITGAdConfig.setIdAdResume("");
+        mWDAdConfig.setIdAdResume("");
 
-        ITGAd.getInstance().init(this, mITGAdConfig);
+        WDAd.getInstance().init(this, mWDAdConfig);
         Admob.getInstance().setDisableAdResumeWhenClickAds(true);
         Admob.getInstance().setOpenActivityAfterShowInterAds(true);
         AppOpenManager.getInstance().disableAppResumeWithActivity(MainActivity.class);
@@ -96,7 +96,7 @@ public class App extends AdsMultiDexApplication {
 
 # Ad Splash Interstitial
 ~~~   
-ITGAd.getInstance().loadSplashInterstitialAds(this, BuildConfig.ad_interstitial_splash, 25000, 5000, new AdCallback() {
+WDAd.getInstance().loadSplashInterstitialAds(this, BuildConfig.ad_interstitial_splash, 25000, 5000, new AdCallback() {
             @Override
             public void onNextAction() {
                 super.onNextAction();
@@ -108,17 +108,17 @@ ITGAd.getInstance().loadSplashInterstitialAds(this, BuildConfig.ad_interstitial_
 
 # Ad Banner
 ~~~   
-ITGAd.getInstance().loadBanner(this, BuildConfig.ad_banner);
+WDAd.getInstance().loadBanner(this, BuildConfig.ad_banner);
 ~~~   
 
 # Ad Collapsible Banner
 ~~~   
-ITGAd.getInstance().loadCollapsibleBanner(this, BuildConfig.ad_banner, AppConstant.CollapsibleGravity.BOTTOM, new AdCallback());
+WDAd.getInstance().loadCollapsibleBanner(this, BuildConfig.ad_banner, AppConstant.CollapsibleGravity.BOTTOM, new AdCallback());
 ~~~   
 
 # Native: Load And Show
 ~~~   
-ITGAd.getInstance().loadNativeAd(this, BuildConfig.ad_native, R.layout.native_large, frAds, shimmerAds, new AdCallback() {
+WDAd.getInstance().loadNativeAd(this, BuildConfig.ad_native, R.layout.native_large, frAds, shimmerAds, new AdCallback() {
             @Override
             public void onAdFailedToLoad(@Nullable LoadAdError i) {
                 super.onAdFailedToLoad(i);
@@ -136,7 +136,7 @@ ITGAd.getInstance().loadNativeAd(this, BuildConfig.ad_native, R.layout.native_la
 # Native: Load
 ~~~   
 private ApNativeAd mApNativeAd;
-ITGAd.getInstance().loadNativeAdResultCallback(this, BuildConfig.ad_native, R.layout.native_large, new AdCallback() {
+WDAd.getInstance().loadNativeAdResultCallback(this, BuildConfig.ad_native, R.layout.native_large, new AdCallback() {
             @Override
             public void onNativeAdLoaded(@NonNull ApNativeAd nativeAd) {
                 super.onNativeAdLoaded(nativeAd);
@@ -163,13 +163,13 @@ ITGAd.getInstance().loadNativeAdResultCallback(this, BuildConfig.ad_native, R.la
 # Native: Show
 ~~~   
 if (mApNativeAd != null) {
-            ITGAd.getInstance().populateNativeAdView(this, mApNativeAd, frAds, shimmerAds);
+            WDAd.getInstance().populateNativeAdView(this, mApNativeAd, frAds, shimmerAds);
         }
 ~~~
 # Reward: Load
 ~~~
 private RewardedAd rewardedAds;
-ITGAd.getInstance().initRewardAds(this, BuildConfig.ad_reward, new AdCallback() {
+WDAd.getInstance().initRewardAds(this, BuildConfig.ad_reward, new AdCallback() {
                 @Override
                 public void onRewardAdLoaded(RewardedAd rewardedAd) {
                     super.onRewardAdLoaded(rewardedAd);
@@ -183,7 +183,7 @@ ITGAd.getInstance().initRewardAds(this, BuildConfig.ad_reward, new AdCallback() 
 private boolean isEarn = false;
 btnShowReward.setOnClickListener(v -> {
             isEarn = false;
-            ITGAd.getInstance().showRewardAds(MainActivity.this, rewardedAds, new RewardCallback() {
+            WDAd.getInstance().showRewardAds(MainActivity.this, rewardedAds, new RewardCallback() {
                 @Override
                 public void onUserEarnedReward(RewardItem var1) {
                     isEarn = true;

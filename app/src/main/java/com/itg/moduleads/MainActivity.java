@@ -22,6 +22,8 @@ import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.rewarded.RewardItem;
 import com.google.android.gms.ads.rewarded.RewardedAd;
+import com.itg.moduleads.R;
+import com.itg.moduleads.BuildConfig;
 
 public class MainActivity extends AppCompatActivity {
     private ApInterstitialAd mInterstitialAd;

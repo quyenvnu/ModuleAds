@@ -30,6 +30,7 @@ import com.ads.control.config.ITGAdConfig;
 import com.ads.control.dialog.PrepareLoadingAdsDialog;
 import com.ads.control.dialog.ResumeLoadingDialog;
 import com.ads.control.event.ITGLogEventManager;
+import com.ads.control.event.FirebaseAnalyticsUtil;
 import com.ads.control.funtion.AdCallback;
 import com.ads.control.funtion.AdType;
 import com.google.android.gms.ads.AdActivity;
@@ -71,6 +72,8 @@ public class AppOpenManager implements Application.ActivityLifecycleCallbacks, L
 
     private static boolean isShowingAd = false;
     private long appResumeLoadTime = 0;
+    private long appResumeShowedTime = 0;
+
     private long splashLoadTime = 0;
     private int splashTimeout = 0;
 
@@ -265,8 +268,7 @@ public class AppOpenManager implements Application.ActivityLifecycleCallbacks, L
         }
         AdRequest request = getAdRequest();
         AppOpenAd.load(
-                myApplication, isSplash ? splashAdId : appResumeAdId, request,
-                AppOpenAd.APP_OPEN_AD_ORIENTATION_PORTRAIT, loadCallback);
+                myApplication, isSplash ? splashAdId : appResumeAdId, request, loadCallback);
     }
 
     @SuppressLint("MissingPermission")
@@ -296,6 +298,12 @@ public class AppOpenManager implements Application.ActivityLifecycleCallbacks, L
         long dateDifference = (new Date()).getTime() - loadTime;
         long numMilliSecondsPerHour = 3600000;
         return (dateDifference < (numMilliSecondsPerHour * numHours));
+    }
+
+    private boolean isClapingTimeValid(long loadTime, long numSeconds) {
+        long dateDifference = (new Date()).getTime() - loadTime;
+        long numMilliSecondsPerSecond = 1000;
+        return (dateDifference > (numMilliSecondsPerSecond * numSeconds));
     }
 
     public boolean isAdAvailable(boolean isSplash) {
@@ -436,6 +444,8 @@ public class AppOpenManager implements Application.ActivityLifecycleCallbacks, L
                                     }
                                     isShowingAd = true;
                                     splashAd = null;
+                                    AppOpenManager.this.appResumeShowedTime = (new Date()).getTime();
+
                                 }
 
 
@@ -520,6 +530,7 @@ public class AppOpenManager implements Application.ActivityLifecycleCallbacks, L
                         }
                         isShowingAd = true;
                         appResumeAd = null;
+                        AppOpenManager.this.appResumeShowedTime = (new Date()).getTime();
                     }
 
                     @Override
@@ -877,9 +888,9 @@ public class AppOpenManager implements Application.ActivityLifecycleCallbacks, L
         AdRequest request = getAdRequest();
         AdRequest request1 = getAdRequest();
         AdRequest request2 = getAdRequest();
-        AppOpenAd.load(myApplication, idOpenHigh, request, AppOpenAd.APP_OPEN_AD_ORIENTATION_PORTRAIT, loadCallbackHigh);
-        AppOpenAd.load(myApplication, idOpenMedium, request1, AppOpenAd.APP_OPEN_AD_ORIENTATION_PORTRAIT, loadCallbackMedium);
-        AppOpenAd.load(myApplication, idOpenAll, request2, AppOpenAd.APP_OPEN_AD_ORIENTATION_PORTRAIT, loadCallbackAll);
+        AppOpenAd.load(myApplication, idOpenHigh, request, loadCallbackHigh);
+        AppOpenAd.load(myApplication, idOpenMedium, request1, loadCallbackMedium);
+        AppOpenAd.load(myApplication, idOpenAll, request2, loadCallbackAll);
     }
 
     public void loadSplashOpenAndInter(Class splashActivity, AppCompatActivity activity, String idOpen, String idInter, int timeOutOpen, AdCallback adListener) {
@@ -1079,7 +1090,7 @@ public class AppOpenManager implements Application.ActivityLifecycleCallbacks, L
 
                 });
 
-        AppOpenAd.load(myApplication, idOpen, getAdRequest(), AppOpenAd.APP_OPEN_AD_ORIENTATION_PORTRAIT, loadCallbackOpen);
+        AppOpenAd.load(myApplication, idOpen, getAdRequest(), loadCallbackOpen);
         currentTime = System.currentTimeMillis();
     }
 
@@ -1148,8 +1159,7 @@ public class AppOpenManager implements Application.ActivityLifecycleCallbacks, L
                 };
         AdRequest request = getAdRequest();
         AppOpenAd.load(
-                myApplication, splashAdId, request,
-                AppOpenAd.APP_OPEN_AD_ORIENTATION_PORTRAIT, loadCallback);
+                myApplication, splashAdId, request, loadCallback);
 
         if (splashTimeout > 0) {
             timeoutHandler = new Handler();
@@ -1190,7 +1200,7 @@ public class AppOpenManager implements Application.ActivityLifecycleCallbacks, L
         handleTimeOut.postDelayed(actionTimeOut, timeOutOpen);
         AppOpenManager.getInstance().setSplashActivity(splashActivity, idOpenHigh, timeOutOpen);
 
-        AppOpenAd.load(activity, idOpenHigh, getAdRequest(), AppOpenAd.APP_OPEN_AD_ORIENTATION_PORTRAIT, new AppOpenAd.AppOpenAdLoadCallback() {
+        AppOpenAd.load(activity, idOpenHigh, getAdRequest(), new AppOpenAd.AppOpenAdLoadCallback() {
             @Override
             public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                 super.onAdFailedToLoad(loadAdError);
@@ -1283,7 +1293,7 @@ public class AppOpenManager implements Application.ActivityLifecycleCallbacks, L
 
         AppOpenAd.load(activity, idOpenAll,
 
-                getAdRequest(), AppOpenAd.APP_OPEN_AD_ORIENTATION_PORTRAIT, new AppOpenAd.AppOpenAdLoadCallback() {
+                getAdRequest(), new AppOpenAd.AppOpenAdLoadCallback() {
                     @Override
                     public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                         super.onAdFailedToLoad(loadAdError);
@@ -1461,13 +1471,13 @@ public class AppOpenManager implements Application.ActivityLifecycleCallbacks, L
         }
 
         for (Class activity : disabledAppOpenList) {
-            if (activity.getName().equals(currentActivity.getClass().getName())) {
+            if (currentActivity != null && activity.getName().equals(currentActivity.getClass().getName())) {
                 Log.d(TAG, "onStart: activity is disabled");
                 return;
             }
         }
 
-        if (splashActivity != null && splashActivity.getName().equals(currentActivity.getClass().getName())) {
+        if (splashActivity != null && currentActivity != null && splashActivity.getName().equals(currentActivity.getClass().getName())) {
             String adId = splashAdId;
             if (adId == null) {
                 Log.e(TAG, "splash ad id must not be null");
@@ -1477,7 +1487,18 @@ public class AppOpenManager implements Application.ActivityLifecycleCallbacks, L
             return;
         }
 
-        Log.d(TAG, "onStart: show resume ads :" + currentActivity.getClass().getName());
+        if (currentActivity != null) {
+            Log.d(TAG, "onStart: show resume ads :" + currentActivity.getClass().getName());
+        } else {
+            Log.d(TAG, "onStart: currentActivity is NULL");
+            FirebaseAnalyticsUtil.logCrashOpenSplash(myApplication.getApplicationContext());
+        }
+
+        long lastShowedTime = appResumeShowedTime;
+        boolean isClapingTimeValid = isClapingTimeValid(lastShowedTime, 20);
+        if (!isClapingTimeValid) {
+            return;
+        }
         showAdIfAvailable(false);
     }
 
@@ -1563,7 +1584,7 @@ public class AppOpenManager implements Application.ActivityLifecycleCallbacks, L
 
                 }
             };
-            AppOpenAd.load(context, adUnitId, adRequest, 1, appOpenAdLoadCallback);
+            AppOpenAd.load(context, adUnitId, adRequest, appOpenAdLoadCallback);
         }
 
     }
@@ -1626,7 +1647,7 @@ public class AppOpenManager implements Application.ActivityLifecycleCallbacks, L
 
                 }
             };
-            AppOpenAd.load(context, (String) listIDResume.get(0), adRequest, 1, appOpenAdLoadCallback);
+            AppOpenAd.load(context, (String) listIDResume.get(0), adRequest, appOpenAdLoadCallback);
         }
 
     }
